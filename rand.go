@@ -127,3 +127,15 @@ func Pick[T any](origins []T, count int) []T {
 		return results
 	}
 }
+
+// 洗牌
+func Shuffle[T any](arr []T, shuffleCount uint8) {
+	length := len(arr)
+	var j uint8
+	for j = 0; j < shuffleCount; j++ {
+		for i := 0; i < length; i++ {
+			r := rand.Intn(length)
+			arr[i], arr[r] = arr[r], arr[i]
+		}
+	}
+}
