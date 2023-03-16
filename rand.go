@@ -104,3 +104,26 @@ func GenID(num_width uint8, canUse func(id int) bool) int {
 	}
 	return 0
 }
+
+func Pick[T any](origins []T, count int) []T {
+	if count == 0 {
+		return []T{}
+	}
+	length := len(origins)
+	newOrigins := make([]T, length, length)
+	copy(newOrigins, origins)
+	origins = newOrigins
+	if length < count {
+		return nil
+	} else if length == count {
+		return origins
+	} else {
+		results := make([]T, count)
+		for i := 0; i < count; i++ {
+			ri := rand.Intn(length - i)
+			results[i] = origins[ri]
+			origins = append(origins[:ri], origins[ri+1:]...)
+		}
+		return results
+	}
+}
