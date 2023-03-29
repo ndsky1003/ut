@@ -1,8 +1,17 @@
 package rand
 
 import (
+	"fmt"
+	"os"
 	"testing"
 )
+
+func TestMain(m *testing.M) {
+	fmt.Println("测试之前的准备工作")
+	code := m.Run()
+	fmt.Println("测试之后的清理工作")
+	os.Exit(code)
+}
 
 func TestGenID(t *testing.T) {
 	type args struct {
