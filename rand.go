@@ -113,9 +113,7 @@ func Pick[T any](origins []T, count int) []T {
 	newOrigins := make([]T, length, length)
 	copy(newOrigins, origins)
 	origins = newOrigins
-	if length < count {
-		return nil
-	} else if length == count {
+	if length <= count {
 		return origins
 	} else {
 		results := make([]T, count)

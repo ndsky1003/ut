@@ -47,6 +47,13 @@ func TestGenID(t *testing.T) {
 	}
 }
 
+func TestPick(t *testing.T) {
+	a := []int{1, 23, 7, 4, 5, 6}
+	v := Pick(a, 68)
+	t.Error(v)
+
+}
+
 func BenchmarkGenID(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		GenID(8, func(id int) bool {
