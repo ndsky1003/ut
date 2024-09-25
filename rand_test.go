@@ -1,4 +1,4 @@
-package rand
+package ut
 
 import (
 	"fmt"
@@ -28,7 +28,7 @@ func TestGenID(t *testing.T) {
 			name: "test1",
 			args: func(t *testing.T) args {
 				return args{
-					num_width: 8,
+					num_width: 9,
 					canUse: func(id int) bool {
 						return true
 					},
@@ -41,16 +41,18 @@ func TestGenID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tArgs := tt.args(t)
-			got1 := GenID(tArgs.num_width, tArgs.canUse)
-			t.Log(got1)
+			for range 100 {
+				got1 := GenID(tArgs.num_width, tArgs.canUse)
+				t.Log(got1)
+			}
 		})
 	}
 }
 
 func TestPick(t *testing.T) {
 	a := []int{1, 23, 7, 4, 5, 6}
-	v := Pick(a, 68)
-	t.Error(v)
+	v := Pick(a, 3)
+	t.Log(v)
 
 }
 

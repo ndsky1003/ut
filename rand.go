@@ -1,12 +1,10 @@
-package rand
+package ut
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
+	"math/rand/v2"
 )
 
-var r rand.Source
 var metas = map[uint8]*flag_items{}
 
 const (
@@ -17,9 +15,6 @@ const (
 )
 
 func init() {
-	v := time.Now().UnixNano()
-	rand.Seed(v)
-	r = rand.NewSource(v)
 	for i := min_D_width; i <= max_D_width; i++ {
 		min, max := gen_min_max_by_width(i)
 		item := &flag_items{
@@ -53,7 +48,7 @@ func gen_min_max_by_width(width uint8) (min int64, max int64) {
 
 func shuffle(arr []uint8) []uint8 {
 	for i := len(arr) - 1; i >= 1; i-- {
-		var ridx = rand.Intn(i)
+		ridx := rand.IntN(i)
 		arr[i], arr[ridx] = arr[ridx], arr[i]
 	}
 	return arr
@@ -72,7 +67,7 @@ func (this *flag_items) String() string {
 // num_width 需要的id宽度
 // canUse 是否可以使用的这个ID
 func GenID(num_width uint8, canUse func(id int) bool) int {
-	randI := r.Int63()
+	randI := rand.Int64()
 	if num_width > max_D_width || num_width < min_D_width {
 		panic(fmt.Sprintf("num_width:%d is invalid", num_width))
 	}
@@ -118,7 +113,7 @@ func Pick[T any](origins []T, count int) []T {
 	} else {
 		results := make([]T, count)
 		for i := 0; i < count; i++ {
-			ri := rand.Intn(length - i)
+			ri := rand.IntN(length - i)
 			results[i] = origins[ri]
 			origins = append(origins[:ri], origins[ri+1:]...)
 		}
@@ -126,14 +121,14 @@ func Pick[T any](origins []T, count int) []T {
 	}
 }
 
-// 洗牌
-func Shuffle[T any](arr []T, shuffleCount uint8) {
+func Shuffle[T any](arr []T, opts ...*shuffle_option) {
+	opt := ShuffleOption().Merge(opts...)
+	shuffleCount := opt.GetCount()
 	length := len(arr)
-	var j uint8
-	for j = 0; j < shuffleCount; j++ {
-		for i := 0; i < length; i++ {
-			r := rand.Intn(length)
-			arr[i], arr[r] = arr[r], arr[i]
-		}
+	var c uint8
+	for c = 0; c < shuffleCount; c++ {
+		rand.Shuffle(length, func(i, j int) {
+			arr[i], arr[j] = arr[j], arr[i]
+		})
 	}
 }

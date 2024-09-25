@@ -1,3 +1,3 @@
-module github.com/ndsky1003/rand
+module github.com/ndsky1003/ut
 
-go 1.20
+go 1.22
