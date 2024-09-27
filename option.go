@@ -75,3 +75,30 @@ func (this *protect_run_option) Merge(opts ...*protect_run_option) *protect_run_
 	}
 	return this
 }
+
+//==================================================
+
+type line_option[T any] struct {
+	shuffle_func func([]T) error
+}
+
+func LineOption[T any]() *line_option[T] {
+	return &line_option[T]{}
+}
+
+func (this *line_option[T]) merge(delta *line_option[T]) *line_option[T] {
+	if delta == nil {
+		return this
+	}
+	if delta.shuffle_func != nil {
+		this.shuffle_func = delta.shuffle_func
+	}
+	return this
+}
+
+func (this *line_option[T]) Merge(opts ...*line_option[T]) *line_option[T] {
+	for _, opt := range opts {
+		this.merge(opt)
+	}
+	return this
+}
