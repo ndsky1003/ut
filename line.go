@@ -8,7 +8,7 @@ import (
 )
 
 type Line[T any] struct {
-	l            sync.Mutex
+	l            sync.RWMutex
 	index        int64
 	arr          []T
 	length       int
@@ -16,8 +16,6 @@ type Line[T any] struct {
 }
 
 func NewLine[T any](opts ...*line_option[T]) *Line[T] {
-	ch := make(chan struct{})
-	close(ch)
 	l := &Line[T]{}
 	opt := LineOption[T]().Merge(opts...)
 	if opt.shuffle_func != nil {
@@ -35,7 +33,7 @@ func NewLine[T any](opts ...*line_option[T]) *Line[T] {
 
 // 在外头洗牌,避免加锁,浪费卡出时间
 func (this *Line[T]) SetArr(index_arr []T) error {
-	if this.arr == nil || len(this.arr) == 0 {
+	if index_arr == nil || len(index_arr) == 0 {
 		return errors.New("arr is nil")
 	}
 	this.l.Lock()
@@ -47,8 +45,8 @@ func (this *Line[T]) SetArr(index_arr []T) error {
 }
 
 func (this *Line[T]) get_value(index int) ([]T, T) {
-	this.l.Lock()
-	defer this.l.Unlock()
+	this.l.RLock()
+	defer this.l.RUnlock()
 	index = index % this.length
 	return this.arr, this.arr[index]
 }
