@@ -64,7 +64,7 @@ func Base(num int, base int) string {
 }
 
 // 将一个字符串转换成指定进制的整数
-func Parese(encoded string, base int) (int, error) {
+func Parse(encoded string, base int) (int, error) {
 	num := 0
 	for _, ch := range encoded {
 		index := base_getValue(byte(ch))
