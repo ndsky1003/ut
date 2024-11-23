@@ -60,7 +60,8 @@ func Base(num int, base int) string {
 	for i, j := 0, len(data)-1; i < j; i, j = i+1, j-1 {
 		data[i], data[j] = data[j], data[i]
 	}
-	return buf.String()
+	// return buf.String() //取出来的byte已经不是同一个了,所以这里不行
+	return string(data)
 }
 
 // 将一个字符串转换成指定进制的整数
