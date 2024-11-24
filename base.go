@@ -56,7 +56,7 @@ func Base(num int, base int) string {
 			panic(err)
 		}
 	}
-	data := buf.Bytes()
+	data := buf.Buffer.Bytes()
 	for i, j := 0, len(data)-1; i < j; i, j = i+1, j-1 {
 		data[i], data[j] = data[j], data[i]
 	}
