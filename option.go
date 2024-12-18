@@ -48,8 +48,12 @@ func ProtectRunOption() *protect_run_option {
 	return &protect_run_option{}
 }
 
-func (this *protect_run_option) SetInterval(interval time.Duration) {
+func (this *protect_run_option) SetInterval(interval time.Duration) *protect_run_option {
+	if this == nil {
+		return nil
+	}
 	this.interval = &interval
+	return this
 }
 
 func (this *protect_run_option) GetInterval() time.Duration {
