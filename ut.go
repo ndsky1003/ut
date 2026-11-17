@@ -1,7 +1,7 @@
 package ut
 
 import (
-	"fmt"
+	"log/slog"
 	"runtime/debug"
 	"time"
 )
@@ -16,7 +16,7 @@ func ProtectRun(f func(), opts ...*protect_run_option) {
 				is_panic = false
 				if err := recover(); err != nil {
 					is_panic = true
-					fmt.Println("recover:", err)
+					slog.Error("recover", "err", err)
 					debug.PrintStack()
 				}
 			}()

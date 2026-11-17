@@ -10,8 +10,9 @@ func ShuffleOption() *shuffle_option {
 	return &shuffle_option{}
 }
 
-func (this *shuffle_option) SetCount(count uint8) {
+func (this *shuffle_option) SetCount(count uint8) *shuffle_option {
 	this.count = &count
+	return this
 }
 
 func (this *shuffle_option) GetCount() uint8 {
