@@ -1,9 +1,8 @@
 package ut
 
 import (
+	"bytes"
 	"fmt"
-
-	"github.com/ndsky1003/buffer"
 )
 
 func base_getValue(c byte) int {
@@ -46,8 +45,7 @@ func Base(num int, base int) string {
 		return "0"
 	}
 
-	buf := buffer.Get()
-	defer buf.Release()
+	var buf bytes.Buffer
 	for num > 0 {
 		remainder := num % base
 		num /= base
@@ -56,11 +54,10 @@ func Base(num int, base int) string {
 			panic(err)
 		}
 	}
-	data := buf.Buffer.Bytes()
+	data := buf.Bytes()
 	for i, j := 0, len(data)-1; i < j; i, j = i+1, j-1 {
 		data[i], data[j] = data[j], data[i]
 	}
-	// return buf.String() //取出来的byte已经不是同一个了,所以这里不行
 	return string(data)
 }
 

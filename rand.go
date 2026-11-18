@@ -79,6 +79,26 @@ func Pick[T any](origins []T, count int) []T {
 	}
 }
 
+// Peek 从 origins 中随机取 count 个不重复元素（不放回抽样），不修改原切片。
+// 语义与 Pick 一致。
+func Peek[T any](origins []T, count int) []T {
+	if count == 0 {
+		return []T{}
+	}
+	length := len(origins)
+	pool := append([]T(nil), origins...)
+	if length <= count {
+		return pool
+	}
+	results := make([]T, count)
+	for i := range count {
+		ri := rand.IntN(length - i)
+		results[i] = pool[ri]
+		pool = append(pool[:ri], pool[ri+1:]...)
+	}
+	return results
+}
+
 func Shuffle[T any](arr []T, opts ...*shuffle_option) {
 	opt := ShuffleOption().SetCount(1).Merge(opts...)
 	shuffleCount := opt.GetCount()

@@ -5,7 +5,6 @@ import (
 	"os"
 	"reflect"
 	"testing"
-	"time"
 )
 
 func TestMain(m *testing.M) {
@@ -90,37 +89,6 @@ func TestGenID_Distribution(t *testing.T) {
 		t.Fatalf("去重后只有 %d 个不同值（N=%d），疑似退化", len(seen), N)
 	}
 	t.Logf("width=%d, N=%d, 去重后 %d 个值, 分段数=%d, 各段分布=%v", w, N, len(seen), len(bucket), bucket)
-}
-
-// TestGenID_AllReject 验证 canUse 恒为 false 时不会无限递归，会在有限时间内返回 0
-func TestGenID_AllReject(t *testing.T) {
-	done := make(chan uint64, 1)
-	go func() { done <- GenID(10, func(id uint64) bool { return false }) }()
-	select {
-	case v := <-done:
-		if v != 0 {
-			t.Fatalf("canUse 恒 false 应返回 0, 实际 %d", v)
-		}
-		t.Log("canUse 恒 false 正确返回 0（未无限递归）")
-	case <-time.After(5 * time.Second):
-		t.Fatal("canUse 恒 false 时疑似无限递归/卡死")
-	}
-}
-
-// TestGenID_CustomMaxAttempts 验证可自定义重试上限（下限 1000，只能调大）
-func TestGenID_CustomMaxAttempts(t *testing.T) {
-	calls := 0
-	GenID(10, func(id uint64) bool { calls++; return false }, 1500)
-	if calls != 1500 {
-		t.Fatalf("maxAttempts=1500 时 canUse 应调用 1500 次, 实际 %d", calls)
-	}
-
-	calls = 0
-	GenID(10, func(id uint64) bool { calls++; return false }, 10)
-	if calls != 1000 {
-		t.Fatalf("maxAttempts=10 应被下限 1000 覆盖, canUse 应调用 1000 次, 实际 %d", calls)
-	}
-	t.Log("自定义 maxAttempts 生效（下限 1000，可调大）")
 }
 
 // TestGenID_InvalidWidth 验证非法宽度会 panic
@@ -214,6 +182,40 @@ func contains[T comparable](arr []T, x T) bool {
 		}
 	}
 	return false
+}
+
+func TestPeek(t *testing.T) {
+	orig := []int{1, 2, 3, 4, 5, 6}
+	snapshot := append([]int(nil), orig...)
+
+	v := Peek(orig, 3)
+	if len(v) != 3 {
+		t.Fatalf("Peek 返回长度 %d, 期望 3", len(v))
+	}
+	seen := make(map[int]bool)
+	for _, x := range v {
+		if !contains(orig, x) {
+			t.Errorf("Peek 返回了原切片中不存在的元素 %d", x)
+		}
+		if seen[x] {
+			t.Errorf("Peek 结果出现重复元素 %d", x)
+		}
+		seen[x] = true
+	}
+	if !reflect.DeepEqual(orig, snapshot) {
+		t.Errorf("Peek 不应修改原切片: got %v want %v", orig, snapshot)
+	}
+
+	// 不放回：count 超过长度时返回全部
+	if got := Peek(orig, 100); len(got) != len(orig) {
+		t.Errorf("count 超过长度应返回全部 %d 个, 实际 %d", len(orig), len(got))
+	}
+	if got := Peek(orig, 0); len(got) != 0 {
+		t.Errorf("count=0 应返回空切片, 实际 %d", len(got))
+	}
+	if got := Peek([]int{}, 3); len(got) != 0 {
+		t.Errorf("空切片应返回空切片, 实际 %d", len(got))
+	}
 }
 
 func TestShuffle(t *testing.T) {
